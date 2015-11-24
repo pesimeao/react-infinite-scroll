@@ -1,3 +1,5 @@
+var deepEqual = require("deep-equal");
+
 function topPosition(domElt) {
   if (!domElt) {
     return 0;
@@ -26,6 +28,9 @@ module.exports = function (React, ReactDOM) {
     componentDidUpdate: function () {
       this.pageLoaded = this.props.pageStart;
       this.attachScrollListener();
+    },
+    shouldComponentUpdate: function(nextProps, nextState) {
+      return !deepEqual(this.props.children, nextProps.children);
     },
     reset: function() {
       this.pageLoaded = this.props.pageStart;
