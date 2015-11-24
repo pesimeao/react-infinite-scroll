@@ -41,7 +41,7 @@ module.exports = function (React, ReactDOM) {
     },
     getScrollParent: function() {
       var el = React.findDOMNode(this);
-      var overflowKey = 'overflowY'; //OVERFLOW_KEYS[this.props.axis];
+      var overflowKey = 'overflowY';
       while (el = el.parentElement) {
         switch (window.getComputedStyle(el)[overflowKey]) {
           case 'auto': case 'scroll': case 'overlay': return el;
@@ -58,9 +58,13 @@ module.exports = function (React, ReactDOM) {
     scrollListener: function () {
       //var el = ReactDOM.findDOMNode(this);
       var el = this.scrollingDOM;
-      //var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-      //if (coords.bottom < this.getViewportSize() + this.props.threshold) {
-      //if (topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight < Number(this.props.threshold)) {
+      
+      // If this doesn't work, look at this:
+      // 1. https://github.com/doronaviguy/react-infinite-scroll/commit/0fe5dadf5df542077fcbd5776d7df464c7f5ca9f
+      // 2. if (this.getDOMNode().getBoundingClientRect().bottom < this.getViewportSize() + this.props.threshold) {
+      // 3. 
+      //   var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+      //   if (topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight < Number(this.props.threshold)) { 
       if (el.scrollHeight - el.offsetHeight <= el.scrollTop + Number(this.props.threshold)) {
         this.detachScrollListener();
         // call loadMore after detachScrollListener to allow
@@ -76,6 +80,7 @@ module.exports = function (React, ReactDOM) {
       this.scrollingDOM.addEventListener('scroll', this.scrollListener);
       this.scrollingDOM.addEventListener('resize', this.scrollListener);
       this.scrollListener();
+      // If problems, look at https://github.com/range-me/react-infinite-scroll/commit/7e31bd4b39804e3bc320ecea5bc42e0c2e036b55
     },
     detachScrollListener: function () {
       this.scrollingDOM.removeEventListener('scroll', this.scrollListener);
