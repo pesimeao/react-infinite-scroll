@@ -30,7 +30,7 @@ module.exports = function (React, ReactDOM) {
       this.attachScrollListener();
     },
     shouldComponentUpdate: function(nextProps, nextState) {
-      return !deepEqual(this.props.children, nextProps.children);
+      return !deepEqual(this.props.children, nextProps.children || nextProps.hasMore !== this.props.hasMore);
     },
     reset: function() {
       this.pageLoaded = this.props.pageStart;
