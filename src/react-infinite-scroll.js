@@ -50,14 +50,14 @@ module.exports = function (React, ReactDOM) {
       return window;
     },
     getViewportSize: function () {
-      var scrollParent = this.scrollParent;
+      var scrollParent = this.scrollingDOM;
       return scrollParent === window ?
         window.innerHeight :
         scrollParent.clientHeight;
     },
     scrollListener: function () {
       //var el = ReactDOM.findDOMNode(this);
-      var el = this.scrollParent;
+      var el = this.scrollingDOM;
       //var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
       //if (coords.bottom < this.getViewportSize() + this.props.threshold) {
       //if (topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight < Number(this.props.threshold)) {
@@ -72,15 +72,15 @@ module.exports = function (React, ReactDOM) {
       if (!this.props.hasMore) {
         return;
       }
-      this.scrollParent = this.getScrollParent();
-      this.scrollParent.addEventListener('scroll', this.scrollListener);
-      this.scrollParent.addEventListener('resize', this.scrollListener);
+      this.scrollingDOM = this.getScrollParent();
+      this.scrollingDOM.addEventListener('scroll', this.scrollListener);
+      this.scrollingDOM.addEventListener('resize', this.scrollListener);
       this.scrollListener();
     },
     detachScrollListener: function () {
-      this.scrollParent.removeEventListener('scroll', this.scrollListener);
-      this.scrollParent.removeEventListener('resize', this.scrollListener);
-      this.scrollParent = null;
+      this.scrollingDOM.removeEventListener('scroll', this.scrollListener);
+      this.scrollingDOM.removeEventListener('resize', this.scrollListener);
+      this.scrollingDOM = null;
     },
     componentWillUnmount: function () {
       this.detachScrollListener();
