@@ -39,10 +39,29 @@ module.exports = function (React, ReactDOM) {
       var props = this.props;
       return React.DOM.div({id: this.props.id || 'infinite_scroll', className: this.props.className || 'infinite-scroll'}, props.children, props.hasMore && (props.loader || InfiniteScroll._defaultLoader));
     },
+    getScrollParent: function() {
+      var el = React.findDOMNode(this);
+      var overflowKey = 'overflowY'; //OVERFLOW_KEYS[this.props.axis];
+      while (el = el.parentElement) {
+        switch (window.getComputedStyle(el)[overflowKey]) {
+          case 'auto': case 'scroll': case 'overlay': return el;
+        }
+      }
+      return window;
+    },
+    getViewportSize: function () {
+      var scrollParent = this.scrollParent;
+      return scrollParent === window ?
+        window.innerHeight :
+        scrollParent.clientHeight;
+    },
     scrollListener: function () {
-      var el = ReactDOM.findDOMNode(this);
-      var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-      if (topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight < Number(this.props.threshold)) {
+      //var el = ReactDOM.findDOMNode(this);
+      var el = this.scrollParent;
+      //var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+      //if (coords.bottom < this.getViewportSize() + this.props.threshold) {
+      //if (topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight < Number(this.props.threshold)) {
+      if (el.scrollHeight - el.offsetHeight <= el.scrollTop + Number(this.props.threshold)) {
         this.detachScrollListener();
         // call loadMore after detachScrollListener to allow
         // for non-async loadMore functions
@@ -53,13 +72,15 @@ module.exports = function (React, ReactDOM) {
       if (!this.props.hasMore) {
         return;
       }
-      window.addEventListener('scroll', this.scrollListener);
-      window.addEventListener('resize', this.scrollListener);
+      this.scrollParent = this.getScrollParent();
+      this.scrollParent.addEventListener('scroll', this.scrollListener);
+      this.scrollParent.addEventListener('resize', this.scrollListener);
       this.scrollListener();
     },
     detachScrollListener: function () {
-      window.removeEventListener('scroll', this.scrollListener);
-      window.removeEventListener('resize', this.scrollListener);
+      this.scrollParent.removeEventListener('scroll', this.scrollListener);
+      this.scrollParent.removeEventListener('resize', this.scrollListener);
+      this.scrollParent = null;
     },
     componentWillUnmount: function () {
       this.detachScrollListener();
