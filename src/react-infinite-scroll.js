@@ -83,9 +83,11 @@ module.exports = function (React, ReactDOM) {
       // If problems, look at https://github.com/range-me/react-infinite-scroll/commit/7e31bd4b39804e3bc320ecea5bc42e0c2e036b55
     },
     detachScrollListener: function () {
-      this.scrollingDOM.removeEventListener('scroll', this.scrollListener);
-      this.scrollingDOM.removeEventListener('resize', this.scrollListener);
-      this.scrollingDOM = null;
+      if (this.scrollingDOM) {
+        this.scrollingDOM.removeEventListener('scroll', this.scrollListener);
+        this.scrollingDOM.removeEventListener('resize', this.scrollListener);
+        this.scrollingDOM = null;
+      }
     },
     componentWillUnmount: function () {
       this.detachScrollListener();
